@@ -27,7 +27,7 @@ def correct_image_orientation(img):
         return img
 
 def create_pixel_art_template(img, pixel_width, pixel_height, scale_factor=5):
-    """Creates a pixel art template from a PIL Image."""
+    """Creates a pixel art template from a Image."""
     
     img_small = img.resize((pixel_width, pixel_height), resample=Image.BILINEAR)
 
@@ -100,9 +100,9 @@ def create_pixel_art_template(img, pixel_width, pixel_height, scale_factor=5):
         draw.text((x, y), text, fill='black', font=font)
     return img_result
 
-st.title("Pixel Art Template Generator")
+st.title("Pixel Template Generator")
 
-uploaded_file = st.file_uploader("Upload an image from your phone", type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader("Upload an image from your phone I might be looking :P (am not) ", type=["jpg", "jpeg", "png"])
 
 unit_type = st.radio(
     "Select Units",
@@ -118,7 +118,7 @@ if uploaded_file is not None:
         original_width, original_height = image.size
         st.image(image, caption="Uploaded Image", width = 300)
 
-        preserve_aspect = st.checkbox("Preserve Original Aspect Ratio?")
+        preserve_aspect = st.checkbox("Preserve Original Resolution?")
 
         if preserve_aspect:
            # use scale_factor to scale up or down the image
@@ -132,7 +132,7 @@ if uploaded_file is not None:
            else:
                 pixel_width = 20
                 pixel_height = 50
-                st.warning("Please enter a positive number for the scale factor.")
+                st.warning("enter a positive number for the scale factor.")
         else:
            dimensions_input = st.text_input(
             "Enter the desired pixel dimensions (width height, e.g., 20 50). Width goes first",
@@ -155,7 +155,7 @@ if uploaded_file is not None:
         if preserve_aspect:
             if scale_factor_choice > 0:
                 template_img = create_pixel_art_template(image, pixel_width, pixel_height)
-                st.image(template_img, caption="Pixel Art Template", use_container_width=True)
+                st.image(template_img, caption="Pixel Template", use_container_width=True)
 
                 estimated_width = pixel_width * stitch_size
                 estimated_height = pixel_height * stitch_size
@@ -184,7 +184,7 @@ if uploaded_file is not None:
             try:
                 pixel_width, pixel_height = map(int, dimensions_input.split())
                 if pixel_width <= 0 or pixel_height <= 0:
-                    st.error("Please enter positive numbers for width and height.")
+                    st.error("Enter positive numbers for width and height.")
                 else:
                     template_img = create_pixel_art_template(image, pixel_width, pixel_height)
                     st.image(template_img, caption="Pixel Art Template", use_container_width=True) # Changed here
@@ -219,7 +219,7 @@ if uploaded_file is not None:
     except Exception as e:
         st.error(f"Error processing image: {e}")
 else:
-    st.info("Please upload an image to begin.")
+    st.info("Please upload an image to begin. or else")
 
 st.header("Calculate Pixel Dimensions from Desired Size")
 
