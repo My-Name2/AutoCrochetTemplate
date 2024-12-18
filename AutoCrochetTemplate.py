@@ -118,10 +118,26 @@ if uploaded_file is not None:
         original_width, original_height = image.size
         st.image(image, caption="Uploaded Image", width = 300)
 
-        dimensions_input = st.text_input(
+        preserve_aspect = st.checkbox("Preserve Original Aspect Ratio?")
+
+        if preserve_aspect:
+           # use scale_factor to scale up or down the image
+           scale_factor_choice = st.number_input("Scaling Factor", value = 1.0, step=0.1)
+
+           if scale_factor_choice > 0:
+
+                pixel_width = int(original_width / scale_factor_choice)
+                pixel_height = int(original_height / scale_factor_choice)
+
+           else:
+                pixel_width = 20
+                pixel_height = 50
+                st.warning("Please enter a positive number for the scale factor.")
+        else:
+           dimensions_input = st.text_input(
             "Enter the desired pixel dimensions (width height, e.g., 20 50). Width goes first",
             value="20 50",  # Provide a default value
-        )
+            )
 
         if unit_type == "Metric (cm)":
             stitch_size = st.number_input(
@@ -136,7 +152,35 @@ if uploaded_file is not None:
             step = 0.1 # the amount to add each step
             )
 
-        if dimensions_input:  # Ensure input is not empty
+        if preserve_aspect:
+            if scale_factor_choice > 0:
+                template_img = create_pixel_art_template(image, pixel_width, pixel_height)
+                st.image(template_img, caption="Pixel Art Template", use_container_width=True)
+
+                estimated_width = pixel_width * stitch_size
+                estimated_height = pixel_height * stitch_size
+                    
+                st.write(f"**Estimated Size:**")
+                
+                if unit_type == "Metric (cm)":
+                    st.write(f"- Width: {estimated_width:.2f} cm")
+                    st.write(f"- Height: {estimated_height:.2f} cm")
+                elif unit_type == "American (inches)":
+                    st.write(f"- Width: {estimated_width:.2f} inches")
+                    st.write(f"- Height: {estimated_height:.2f} inches")
+
+                # Download Button (Using Bytes)
+                buf = io.BytesIO()
+                template_img.save(buf, format="PNG")
+                byte_im = buf.getvalue()
+
+                st.download_button(
+                   label="Download Image",
+                   data = byte_im,
+                   file_name = "pixel_art_template.png",
+                   mime="image/png"
+                )
+        elif dimensions_input:  # Ensure input is not empty
             try:
                 pixel_width, pixel_height = map(int, dimensions_input.split())
                 if pixel_width <= 0 or pixel_height <= 0:
@@ -157,15 +201,6 @@ if uploaded_file is not None:
                     elif unit_type == "American (inches)":
                         st.write(f"- Width: {estimated_width:.2f} inches")
                         st.write(f"- Height: {estimated_height:.2f} inches")
-
-                    # Calculate Resolution Multiplier
-                    width_multiplier = original_width / pixel_width
-                    height_multiplier = original_height / pixel_height
-
-                    st.write("**Resolution Multiplier**")
-                    st.write(f"- Width Multiplier: {width_multiplier:.2f}")
-                    st.write(f"- Height Multiplier: {height_multiplier:.2f}")
-
                     
                     # Download Button (Using Bytes)
                     buf = io.BytesIO()
