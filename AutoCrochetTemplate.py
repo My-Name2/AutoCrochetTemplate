@@ -100,13 +100,13 @@ def create_pixel_art_template(img, pixel_width, pixel_height, scale_factor=5):
         draw.text((x, y), text, fill='black', font=font)
     return img_result
 
-st.title("Pixel Art Template Generator")
+st.title("Pixel Template For CROCHET not sewing.")
 
 uploaded_file = st.file_uploader("Upload an image from your phone", type=["jpg", "jpeg", "png"])
 
 unit_type = st.radio(
     "Select Units",
-    ["Metric (cm)", "American (inches)"],
+    ["Metric (cm)", "American *eagle noises* (inches)"],
     index = 0 # default is Metric
 )
 
@@ -119,19 +119,19 @@ if uploaded_file is not None:
         st.image(image, caption="Uploaded Image", width = 300)
 
         dimensions_input = st.text_input(
-            "Enter the desired pixel dimensions (width height, e.g., 20 50). Width goes first",
+            "Enter the desired pixel dimensions (width height, e.g., 20 50). girth i mean Width goes first :P",
             value="20 50",  # Provide a default value
         )
 
         if unit_type == "Metric (cm)":
             stitch_size = st.number_input(
-            "Enter the approximate size of your stitch (in centimeters, e.g., 0.5 for 1/2cm)",
+            "approximate size of your stitch (in centimeters 0.5 for 1/2cm) ",
             value = 0.5,  # Provide a default value
             step = 0.1 # the amount to add each step
             )
-        elif unit_type == "American (inches)":
+        elif unit_type == "American *eagle noises* (yes again) (inches)":
             stitch_size = st.number_input(
-            "Enter the approximate size of your stitch (in inches, e.g., 0.2 for 1/5in)",
+            "approximate size of your stitch (in inches 0.2 for 1/5in)",
             value = 0.2,  # Provide a default value
             step = 0.1 # the amount to add each step
             )
@@ -140,10 +140,10 @@ if uploaded_file is not None:
             try:
                 pixel_width, pixel_height = map(int, dimensions_input.split())
                 if pixel_width <= 0 or pixel_height <= 0:
-                    st.error("Please enter positive numbers for width and height.")
+                    st.error("Please normal numbers (positive ones) for width and height.")
                 else:
                     template_img = create_pixel_art_template(image, pixel_width, pixel_height)
-                    st.image(template_img, caption="Pixel Art Template", use_container_width=True) # Changed here
+                    st.image(template_img, caption="Pixel Template", use_container_width=True) # Changed here
 
                     # Calculate Estimated Size
                     estimated_width = pixel_width * stitch_size
