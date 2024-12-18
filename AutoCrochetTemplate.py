@@ -104,6 +104,12 @@ st.title("Pixel Art Template Generator")
 
 uploaded_file = st.file_uploader("Upload an image from your phone", type=["jpg", "jpeg", "png"])
 
+unit_type = st.radio(
+    "Select Units",
+    ["Metric (cm)", "American (inches)"],
+    index = 0 # default is Metric
+)
+
 if uploaded_file is not None:
     try:
         image = Image.open(uploaded_file)
@@ -116,11 +122,18 @@ if uploaded_file is not None:
             value="20 50",  # Provide a default value
         )
 
-        stitch_size = st.number_input(
-        "Enter the approximate size of your stitch (in centimeters, e.g., 0.5 for 1/2cm)",
-        value = 0.5,  # Provide a default value
-        step = 0.1 # the amount to add each step
-        )
+        if unit_type == "Metric (cm)":
+            stitch_size = st.number_input(
+            "Enter the approximate size of your stitch (in centimeters, e.g., 0.5 for 1/2cm)",
+            value = 0.5,  # Provide a default value
+            step = 0.1 # the amount to add each step
+            )
+        elif unit_type == "American (inches)":
+            stitch_size = st.number_input(
+            "Enter the approximate size of your stitch (in inches, e.g., 0.2 for 1/5in)",
+            value = 0.2,  # Provide a default value
+            step = 0.1 # the amount to add each step
+            )
 
         if dimensions_input:  # Ensure input is not empty
             try:
@@ -132,12 +145,22 @@ if uploaded_file is not None:
                     st.image(template_img, caption="Pixel Art Template", use_container_width=True) # Changed here
 
                     # Calculate Estimated Size
-                    estimated_width_cm = pixel_width * stitch_size
-                    estimated_height_cm = pixel_height * stitch_size
+                    estimated_width = pixel_width * stitch_size
+                    estimated_height = pixel_height * stitch_size
+                    
                     st.write(f"**Estimated Size:**")
-                    st.write(f"- Width: {estimated_width_cm:.2f} cm")
-                    st.write(f"- Height: {estimated_height_cm:.2f} cm")
-
+                    
+                    if unit_type == "Metric (cm)":
+                         st.write(f"- Width: {estimated_width:.2f} cm")
+                         st.write(f"- Height: {estimated_height:.2f} cm")
+                         if math.isclose(estimated_width, 16.51, abs_tol = 0.05) or math.isclose(estimated_height, 16.51, abs_tol = 0.05): # 6.5 inches = 16.51 cm
+                                st.write("Yep, thats me - Angel")
+                    elif unit_type == "American (inches)":
+                        st.write(f"- Width: {estimated_width:.2f} inches")
+                        st.write(f"- Height: {estimated_height:.2f} inches")
+                        if math.isclose(estimated_width, 6.5, abs_tol = 0.05) or math.isclose(estimated_height, 6.5, abs_tol = 0.05):
+                                st.write("Yep, thats me - Angel")
+                    
                     # Download Button (Using Bytes)
                     buf = io.BytesIO()
                     template_img.save(buf, format="PNG")
@@ -159,13 +182,18 @@ else:
 
 st.header("Calculate Pixel Dimensions from Desired Size")
 
-desired_width_cm = st.number_input("Desired Width (cm)", value = 10.0, step = 1.0)
-desired_height_cm = st.number_input("Desired Height (cm)", value = 10.0, step = 1.0)
-stitch_size_calc = st.number_input("Stitch Size (cm/pixel)", value = 0.5, step = 0.1)
+if unit_type == "Metric (cm)":
+    desired_width = st.number_input("Desired Width (cm)", value = 10.0, step = 1.0)
+    desired_height = st.number_input("Desired Height (cm)", value = 10.0, step = 1.0)
+    stitch_size_calc = st.number_input("Stitch Size (cm/pixel)", value = 0.5, step = 0.1)
+elif unit_type == "American (inches)":
+    desired_width = st.number_input("Desired Width (inches)", value = 4.0, step = 1.0)
+    desired_height = st.number_input("Desired Height (inches)", value = 4.0, step = 1.0)
+    stitch_size_calc = st.number_input("Stitch Size (in/pixel)", value = 0.2, step = 0.1)
 
-if desired_width_cm and desired_height_cm and stitch_size_calc:
-    calculated_width_pixels = desired_width_cm / stitch_size_calc
-    calculated_height_pixels = desired_height_cm / stitch_size_calc
+if desired_width and desired_height and stitch_size_calc:
+    calculated_width_pixels = desired_width / stitch_size_calc
+    calculated_height_pixels = desired_height / stitch_size_calc
     st.write(f"**Approximate pixel dimensions:**")
     st.write(f"Width: {calculated_width_pixels:.0f} pixels")
     st.write(f"Height: {calculated_height_pixels:.0f} pixels")
