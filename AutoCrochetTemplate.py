@@ -98,7 +98,7 @@ if uploaded_file is not None:
                     st.error("Please enter positive numbers for width and height.")
                 else:
                     template_img = create_pixel_art_template(image, pixel_width, pixel_height)
-                    st.image(template_img, caption="Pixel Art Template", use_column_width=True)
+                    st.image(template_img, caption="Pixel Art Template", use_container_width=True) # Changed here
 
                     # Download Button (Using Bytes)
                     buf = io.BytesIO()
