@@ -116,6 +116,12 @@ if uploaded_file is not None:
             value="20 50",  # Provide a default value
         )
 
+        stitch_size = st.number_input(
+        "Enter the approximate size of your stitch (in centimeters, e.g., 0.5 for 1/2cm)",
+        value = 0.5,  # Provide a default value
+        step = 0.1 # the amount to add each step
+        )
+
         if dimensions_input:  # Ensure input is not empty
             try:
                 pixel_width, pixel_height = map(int, dimensions_input.split())
@@ -124,6 +130,13 @@ if uploaded_file is not None:
                 else:
                     template_img = create_pixel_art_template(image, pixel_width, pixel_height)
                     st.image(template_img, caption="Pixel Art Template", use_container_width=True) # Changed here
+
+                    # Calculate Estimated Size
+                    estimated_width_cm = pixel_width * stitch_size
+                    estimated_height_cm = pixel_height * stitch_size
+                    st.write(f"**Estimated Size:**")
+                    st.write(f"- Width: {estimated_width_cm:.2f} cm")
+                    st.write(f"- Height: {estimated_height_cm:.2f} cm")
 
                     # Download Button (Using Bytes)
                     buf = io.BytesIO()
@@ -143,3 +156,16 @@ if uploaded_file is not None:
         st.error(f"Error processing image: {e}")
 else:
     st.info("Please upload an image to begin.")
+
+st.header("Calculate Pixel Dimensions from Desired Size")
+
+desired_width_cm = st.number_input("Desired Width (cm)", value = 10.0, step = 1.0)
+desired_height_cm = st.number_input("Desired Height (cm)", value = 10.0, step = 1.0)
+stitch_size_calc = st.number_input("Stitch Size (cm/pixel)", value = 0.5, step = 0.1)
+
+if desired_width_cm and desired_height_cm and stitch_size_calc:
+    calculated_width_pixels = desired_width_cm / stitch_size_calc
+    calculated_height_pixels = desired_height_cm / stitch_size_calc
+    st.write(f"**Approximate pixel dimensions:**")
+    st.write(f"Width: {calculated_width_pixels:.0f} pixels")
+    st.write(f"Height: {calculated_height_pixels:.0f} pixels")
