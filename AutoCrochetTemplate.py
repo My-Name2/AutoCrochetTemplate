@@ -2,6 +2,29 @@ import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 import math
 import io
+from PIL import ExifTags
+
+def correct_image_orientation(img):
+    """Corrects image orientation based on EXIF data."""
+    try:
+        for orientation in ExifTags.TAGS.keys():
+            if ExifTags.TAGS[orientation] == 'Orientation':
+                break
+        exif = img._getexif()
+        if exif:
+            exif = dict(exif.items())
+            if orientation in exif:
+                orientation_value = exif[orientation]
+                if orientation_value == 3:
+                    img = img.rotate(180, expand=True)
+                elif orientation_value == 6:
+                    img = img.rotate(270, expand=True)
+                elif orientation_value == 8:
+                    img = img.rotate(90, expand=True)
+        return img
+    except (AttributeError, KeyError, IndexError):
+        # cases: image don't have getexif
+        return img
 
 def create_pixel_art_template(img, pixel_width, pixel_height, scale_factor=5):
     """Creates a pixel art template from a PIL Image."""
@@ -84,6 +107,8 @@ uploaded_file = st.file_uploader("Upload an image from your phone", type=["jpg",
 if uploaded_file is not None:
     try:
         image = Image.open(uploaded_file)
+        image = correct_image_orientation(image)  # Correct orientation before processing
+
         st.image(image, caption="Uploaded Image", width = 300)
 
         dimensions_input = st.text_input(
